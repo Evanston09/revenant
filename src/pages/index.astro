@@ -1,14 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import downArrow from '../icons/down-arrow.svg';
-import Island from '../components/Island.astro';
+import Bear from '../components/Bear.astro';
 import Abandon from '../components/Abandon.astro';
 import Confront from '../components/Confront.astro';
 ---
 
 <Layout title="Welcome to Astro.">
     <div id="scroller" class="h-screen snap-y snap-mandatory overflow-y-scroll bg-stone-900 transition-all duration-1000 ease-in">
-        <div class="h-screen snap-center flex flex-col justify-between">
+        <div id="hero" class="h-screen snap-center flex flex-col justify-between">
             <div class="flex items-center justify-center flex-col grow text-center">
                 <h1 class="font-serif text-8xl text-white">THE <span class="hover:text-red-700 transition-colors">REVENANT</span> DIGITAL PROJECT</h1>
                 <h2 id="quote" class="font-serif text-4xl text-gray-400 transition-opacity duration-1000 italic">I ain't afraid of dying anymore. I done it already. - Hugh Glass</h2>
@@ -18,7 +18,7 @@ import Confront from '../components/Confront.astro';
                 <img id="arrow" src={downArrow.src} class="animate-bounce transition-opacity opacity-0 duration-1000" alt="down arrow"/>
             </div>
         </div>
-        <Island />
+        <Bear />
         <Abandon />
         <Confront />
     </div>
@@ -68,27 +68,33 @@ const options = {
 };
 
 let scroller = document.getElementById("scroller");
-const intersectionCallback = (entries: IntersectionObserverEntry[]) => {
-  entries.forEach((entry: IntersectionObserverEntry) => {
+
+const colors = {
+  hero: "bg-stone-900",
+  bear: "bg-red-500",
+  abandon: "bg-green-500",
+  confront: "bg-cyan-500",
+};
+
+const intersectionCallback = (entries) => {
+  entries.forEach((entry) => {
     if (entry.isIntersecting) {
-      let elem = entry.target;
-        if (elem.id === "island") {
-            scroller.classList.remove("bg-stone-900");
-            // If time maybe transition to gradient
-            // scroller.classList.add("bg-gradient-to-r", "from-red-500", "to-orange-600");
-            scroller.classList.add("bg-red-500");
-        }
+      Object.values(colors).forEach((color) => scroller.classList.remove(color));
+
+      const colorClass = colors[entry.target.id];
+      if (colorClass) {
+        scroller.classList.add(colorClass);
+      }
     }
   });
 };
 
 
 
+
 const observer = new IntersectionObserver(intersectionCallback, options);
 
-const target = document.getElementById("island");
-if (target) {
-    observer.observe(target);
-    
-}
+document.querySelectorAll('#hero, #bear, #confront, #abandon').forEach((section) => {
+  observer.observe(section);
+});
 </script>

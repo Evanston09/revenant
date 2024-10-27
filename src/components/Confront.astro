@@ -1,5 +1,5 @@
-<section id="testing" class="snap-center">
-    <canvas id="confront" class="h-screen w-full"></canvas>
+<section id="confront" class="snap-center">
+    <canvas id="confront_canvas" class="h-screen w-full"></canvas>
 </section>
 
 <script>
@@ -9,7 +9,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import TWEEN from '@tweenjs/tween.js'
 
-const canvas = document.getElementById('confront');
+const canvas = document.getElementById('confront_canvas');
 
 if (canvas) {
     let mixer: THREE.AnimationMixer;
@@ -20,7 +20,7 @@ if (canvas) {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
     const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, .1, 50);
-    camera.position.set(-25, 15, -25);
+    camera.position.set(25, 15, -25);
     const controls = new OrbitControls( camera, canvas );
     controls.autoRotateSpeed = -1;
     controls.enableDamping = true;
@@ -35,7 +35,7 @@ if (canvas) {
 
     const scene = new THREE.Scene();
 
-    const color = 0xFFFFFF;
+    const color = 0XFFFFFF;
     const intensity = 5;
     const light = new THREE.DirectionalLight(color, intensity);
     light.position.set(20, 20, -15);
@@ -70,10 +70,8 @@ if (canvas) {
         const root = gltf.scene;
         root.traverse( function( node ) {
 
-            if (node.type === 'Mesh') { 
                 node.castShadow = true; 
                 node.receiveShadow = true
-            }
 
         } );
 
@@ -85,7 +83,7 @@ if (canvas) {
     });
 
     let tween = new TWEEN.Tween(camera.position)
-        .to( { x: 0, y:10, z:-14 }, 2000)
+        .to( { x: 0, y:8, z:-14 }, 2000)
         .easing(TWEEN.Easing.Quartic.InOut)
         .onComplete(handleComplete);
 
