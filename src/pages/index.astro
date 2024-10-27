@@ -4,14 +4,18 @@ import downArrow from '../icons/down-arrow.svg';
 import Bear from '../components/Bear.astro';
 import Abandon from '../components/Abandon.astro';
 import Confront from '../components/Confront.astro';
+import Loading from '../components/Loading.astro';
+import ThankYou from '../components/ThankYou.astro';
 ---
 
-<Layout title="Welcome to Astro.">
-    <div id="scroller" class="h-screen snap-y snap-mandatory overflow-y-scroll bg-stone-900 transition-all duration-1000 ease-in">
+<Layout title="The Revenant">
+    <Loading />
+
+    <div id="scroller" class="invisible h-screen snap-y snap-mandatory overflow-y-scroll bg-stone-900 transition-all duration-1000 ease-in">
         <div id="hero" class="h-screen snap-center flex flex-col justify-between">
             <div class="flex items-center justify-center flex-col grow text-center">
-                <h1 class="font-serif text-8xl text-white">THE <span class="hover:text-red-700 transition-colors">REVENANT</span> DIGITAL PROJECT</h1>
-                <h2 id="quote" class="font-serif text-4xl text-gray-400 transition-opacity duration-1000 italic">I ain't afraid of dying anymore. I done it already. - Hugh Glass</h2>
+                <h1 class="font-serif text-8xl text-white">THE <span class="text-red-700 hover:text-red-600 transition-colors">REVENANT</span> DIGITAL PROJECT</h1>
+                <h2 id="quote" class="font-serif text-4xl text-gray-400 transition-opacity duration-2000 italic">I ain't afraid of dying anymore. I done it already. - Hugh Glass</h2>
                 <h3 class="text-3xl text-gray-400">By: Evan Kim</h3>
             </div>
             <div class="flex items-center justify-center pb-8">
@@ -21,11 +25,47 @@ import Confront from '../components/Confront.astro';
         <Bear />
         <Abandon />
         <Confront />
+        <ThankYou />
     </div>
 
 <script>
-let quote = document.getElementById("quote");
+function createAudio(url: string) {
+    const audio_element = new Audio(url);
+    audio_element.loop = true;
+    return audio_element;
+}
+const audio = {
+    hero: createAudio("hero.ogg"),
+    bear: createAudio("bear.ogg"),
+    abandon: createAudio("abandon.ogg"),
+    confront: createAudio("confront.ogg"),
+    thank_you: createAudio("thank_you.ogg"),
+};
 
+let scroller = document.getElementById("scroller");
+import { loadingManager } from '../utils/loadingManager';
+
+let loading = document.getElementById("loading");
+let loading_icon = document.getElementById("loading_icon");
+let loading_text = document.getElementById("loading_text");
+
+if (loading && loading_text && loading_icon) {
+    loadingManager.onProgress = function ( _, itemsLoaded, itemsTotal ) {
+        loading_text.textContent = 'Loaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.';
+    };
+    loadingManager.onLoad = function ( ) {
+        loading_text.textContent = 'Press to Start';
+        loading_icon.classList.add("hidden");
+        loading.onclick = () => {
+            audio.hero.play();
+            
+            loading.classList.add("hidden");
+            scroller.classList.remove("invisible");
+        };
+    };
+}
+// This is kinda gimicky
+let quote = document.getElementById("quote");
 const revenantQuotes = [
   "As long as you can still grab a breath, you fight. You breathe... keep breathing. - Hugh Glass",
   "I'll find them. And when I do, they'll know my name. - Hugh Glass",
@@ -51,37 +91,44 @@ if (quote) {
         let randomQuote = revenantQuotes[Math.floor(Math.random() * revenantQuotes.length)];
         quote.style.opacity = "0";
         setTimeout(() => {
-            quote.innerHTML = randomQuote;
             quote.style.opacity = "1";
-        }, 1000);
+            quote.innerHTML = randomQuote;
+        }, 2000);
                
-    }, 4000);
+    }, 6000);
 }
 
 setTimeout(() => {
     let arrow = document.getElementById("arrow");
     arrow.style.opacity = "1";
-}, 2000);
+}, 3000);
 
 const options = {
   threshold: 1,
 };
 
-let scroller = document.getElementById("scroller");
+
 
 const colors = {
   hero: "bg-stone-900",
-  bear: "bg-red-500",
-  abandon: "bg-green-500",
-  confront: "bg-cyan-500",
+  bear: "bg-zinc-800",
+  abandon: "bg-zinc-800",
+  confront: "bg-zinc-800",
+  thank_you: "bg-zinc-800",
 };
 
 const intersectionCallback = (entries) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
       Object.values(colors).forEach((color) => scroller.classList.remove(color));
+      Object.values(audio).forEach((audio) => audio.pause());
 
       const colorClass = colors[entry.target.id];
+      const playAudio = audio[entry.target.id];
+
+    if (playAudio) {
+        playAudio.play();
+    }
       if (colorClass) {
         scroller.classList.add(colorClass);
       }
@@ -90,11 +137,9 @@ const intersectionCallback = (entries) => {
 };
 
 
-
-
 const observer = new IntersectionObserver(intersectionCallback, options);
 
-document.querySelectorAll('#hero, #bear, #confront, #abandon').forEach((section) => {
+document.querySelectorAll('#hero, #bear, #confront, #abandon, #thank_you').forEach((section) => {
   observer.observe(section);
 });
 </script>
