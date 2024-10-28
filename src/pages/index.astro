@@ -6,10 +6,13 @@ import Abandon from '../components/Abandon.astro';
 import Confront from '../components/Confront.astro';
 import Loading from '../components/Loading.astro';
 import ThankYou from '../components/ThankYou.astro';
+import Toast from  '../components/Toast.astro';
 ---
 
 <Layout title="The Revenant">
     <Loading />
+
+    <Toast />
 
     <div id="scroller" class="invisible h-screen snap-y snap-mandatory overflow-y-scroll bg-stone-900 transition-all duration-1000 ease-in">
         <div id="hero" class="h-screen snap-center flex flex-col justify-between">
@@ -38,6 +41,8 @@ addEventListener("resize", () => {
     alert("Resizing is not implemented. THINGS WILL BE BROKEN");
 });
 
+let toast = document.getElementById("toast");
+
 function createAudio(url: string) {
     const audio_element = new Audio(url);
     audio_element.loop = true;
@@ -52,7 +57,7 @@ const audio: { [key: string]: HTMLAudioElement } = {
 };
 
 let scroller = document.getElementById("scroller");
-if (scroller) {
+if (scroller && toast) {
 
 let loading = document.getElementById("loading");
 let loading_icon = document.getElementById("loading_icon");
@@ -129,14 +134,35 @@ const colors: { [key: string]: string } = {
   thank_you: "bg-zinc-800",
 };
 
+// Trash implementation
+
+let dismissed = false;
 const intersectionCallback = (entries: IntersectionObserverEntry[]) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
       Object.values(colors).forEach((color) => scroller.classList.remove(color));
       Object.values(audio).forEach((audio) => audio.pause());
+    const sectionId = entry.target.id;
+                
+    // Figure out how to do this better
+    // This way is trash
+    if (sectionId !== "hero" && !dismissed) {
+        setTimeout(() => {
+            toast.style.opacity = "1";
+            addEventListener("mousedown", () => {
+                toast.style.opacity = "0";
+                dismissed = true;
+            });
+        }, 3000);
 
-      const colorClass = colors[entry.target.id];
-      const playAudio = audio[entry.target.id];
+    }
+    else {
+        toast.style.opacity = "0";
+    }
+      
+
+    const colorClass = colors[sectionId];
+      const playAudio = audio[sectionId];
 
     if (playAudio) {
         playAudio.play();
