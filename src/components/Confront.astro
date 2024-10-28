@@ -99,8 +99,10 @@ if (canvas) {
         requestAnimationFrame(animate);
 
         // Needed for GLTF animations
-        let delta = clock.getDelta();
-        mixer.update(delta);
+        if (mixer) {
+            let delta = clock.getDelta();
+            mixer.update(delta);
+        }
         
         // Needed for camera movement
         tween.update();
@@ -112,7 +114,7 @@ if (canvas) {
         renderer.render( scene, camera );
     }
     
-    const callback = (entries) => {
+    const callback = (entries: IntersectionObserverEntry[]) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
                 tween.start();
@@ -121,8 +123,11 @@ if (canvas) {
     };
 
     const observer = new IntersectionObserver(callback, {threshold: .1});
-    const target = document.getElementById("confront");
-    observer.observe(target);
+    const target = document.querySelector("#confront");
+    
+    if (target) {
+        observer.observe(target);
+    }
     
 
     animate();

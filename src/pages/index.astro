@@ -29,12 +29,21 @@ import ThankYou from '../components/ThankYou.astro';
     </div>
 
 <script>
+import { loadingManager } from '../utils/loadingManager';
+if (window.innerWidth < 768) {
+    alert("This project is best viewed on a desktop browser. THINGS WILL BE BROKEN");
+}
+
+addEventListener("resize", () => {
+    alert("Resizing is not implemented. THINGS WILL BE BROKEN");
+});
+
 function createAudio(url: string) {
     const audio_element = new Audio(url);
     audio_element.loop = true;
     return audio_element;
 }
-const audio = {
+const audio: { [key: string]: HTMLAudioElement } = {
     hero: createAudio("hero.ogg"),
     bear: createAudio("bear.ogg"),
     abandon: createAudio("abandon.ogg"),
@@ -43,7 +52,7 @@ const audio = {
 };
 
 let scroller = document.getElementById("scroller");
-import { loadingManager } from '../utils/loadingManager';
+if (scroller) {
 
 let loading = document.getElementById("loading");
 let loading_icon = document.getElementById("loading_icon");
@@ -100,7 +109,10 @@ if (quote) {
 
 setTimeout(() => {
     let arrow = document.getElementById("arrow");
-    arrow.style.opacity = "1";
+    if (arrow)
+    { 
+        arrow.style.opacity = "1";
+    }
 }, 3000);
 
 const options = {
@@ -109,7 +121,7 @@ const options = {
 
 
 
-const colors = {
+const colors: { [key: string]: string } = {
   hero: "bg-stone-900",
   bear: "bg-zinc-800",
   abandon: "bg-zinc-800",
@@ -117,7 +129,7 @@ const colors = {
   thank_you: "bg-zinc-800",
 };
 
-const intersectionCallback = (entries) => {
+const intersectionCallback = (entries: IntersectionObserverEntry[]) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
       Object.values(colors).forEach((color) => scroller.classList.remove(color));
@@ -142,4 +154,5 @@ const observer = new IntersectionObserver(intersectionCallback, options);
 document.querySelectorAll('#hero, #bear, #confront, #abandon, #thank_you').forEach((section) => {
   observer.observe(section);
 });
+}
 </script>

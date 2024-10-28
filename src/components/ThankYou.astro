@@ -3,7 +3,7 @@
     <div class="absolute top-0 left-0 right-0 flex justify-center items-center h-full">
         <div class="text-center">
             <h1 class="font-serif text-6xl text-white">Thank You!</h1>
-            <h2 class="font-serif text-4xl text-gray-400 italic">Modelling, Programming, and Audio Design by: Evan Kim</h2>
+            <h2 class="font-serif text-4xl text-gray-400 italic"><a class="underline hover:text-gray-300" href="https://github.com/Evanston09/revenant"> Modelling, Programming, and Audio Design</a> by: Evan Kim</h2>
         </div>
     </div>
 </section>
@@ -63,26 +63,13 @@ if (canvas) {
         requestAnimationFrame(animate);
 
         // Needed for GLTF animations
-        let delta = clock.getDelta();
-        mixer.update(delta);
+        if (mixer) {
+            let delta = clock.getDelta();
+            mixer.update(delta);
+        }
 
         renderer.render( scene, camera );
     }
-    
-    const callback = (entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                tween.start();
-            } 
-        });
-    };
-
-    const observer = new IntersectionObserver(callback, {threshold: .1});
-    const target = document.getElementById("thank_you");
-    if (target) {
-        observer.observe(target);
-    }
-
     animate();
 }
 </script>
